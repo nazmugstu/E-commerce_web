@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}রেজিস্ট্রেশন{% endblock %}
+{% block content %}
+<div class="container">
+    <h1>রেজিস্ট্রেশন</h1>
+    <form method="post" action="{% url 'accounts:register' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        {% if form.errors %}
+            <ul>
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <button type="submit">রেজিস্টার</button>
+    </form>
+    <p>ইতিমধ্যে অ্যাকাউন্ট আছে? <a href="{% url 'accounts:login' %}">লগইন করুন</a></p>
+</div>
+{% endblock %}

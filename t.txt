@@ -1,0 +1,66 @@
+ecommerce_project/
+├── ecommerce/                        # Django প্রজেক্ট ফোল্ডার
+│   ├── __init__.py                   # Python প্যাকেজ ফাইল
+│   ├── settings.py                   # Django সেটিংস (DB, SSLCommerz keys, Email config)
+│   ├── urls.py                       # প্রজেক্ট-লেভেল URL রাউটিং
+│   ├── wsgi.py                       # WSGI কনফিগারেশন (ডিপ্লয়মেন্টের জন্য)
+│   └── asgi.py                       # ASGI কনফিগারেশন (অপশনাল)
+├── core/                             # মূল অ্যাপ (প্রোডাক্ট, কার্ট, অর্ডার)
+│   ├── migrations/                   # ডাটাবেস মাইগ্রেশন ফাইল
+│   ├── templates/core/               # অ্যাপ-স্পেসিফিক টেমপ্লেট
+│   │   ├── home.html                 # হোমপেজ (ন্যাভবার, ক্যারোজেল, প্রোডাক্ট কার্ড)
+│   │   ├── product_detail.html       # প্রোডাক্ট ডিটেইল পেজ
+│   │   ├── cart.html                 # কার্ট পেজ
+│   │   ├── checkout.html             # চেকআউট পেজ (SSLCommerz ফর্ম)
+│   │   └── base.html                 # বেস টেমপ্লেট (ন্যাভবার, ফুটার)
+│   ├── static/core/                  # অ্যাপ-স্পেসিফিক স্ট্যাটিক ফাইল
+│   │   ├── css/                      # কাস্টম CSS বা Tailwind আউটপুট
+│   │   ├── js/                       # কাস্টম JavaScript (যেমন ক্যারোজেল, কার্ট আপডেট)
+│   │   └── images/                   # প্রোডাক্ট ইমেজ, ব্যানার
+│   ├── models.py                     # ডাটাবেস মডেল (Product, Cart, Order, Review, Wishlist)
+│   ├── views.py                      # ভিউ ফাংশন/ক্লাস (হোম, প্রোডাক্ট, কার্ট, চেকআউট)
+│   ├── urls.py                       # অ্যাপ-লেভেল URL রাউটিং
+│   ├── forms.py                      # ফর্ম (যেমন রিভিউ ফর্ম, চেকআউট ফর্ম)
+│   ├── admin.py                      # অ্যাডমিন প্যানেল কনফিগারেশন
+│   ├── tests.py                      # টেস্ট কেস (অপশনাল)
+│   └── utils.py                      # ইউটিলিটি ফাংশন (যেমন ইনভয়েস জেনারেশন, স্টক আপডেট)
+├── accounts/                         # অথেনটিকেশন এবং ইউজার ম্যানেজমেন্ট অ্যাপ
+│   ├── migrations/                   # ডাটাবেস মাইগ্রেশন ফাইল
+│   ├── templates/accounts/           # অথেনটিকেশন টেমপ্লেট
+│   │   ├── login.html                # লগইন পেজ
+│   │   ├── register.html             # রেজিস্ট্রেশন পেজ
+│   │   ├── dashboard.html            # ইউজার ড্যাশবোর্ড (প্রোফাইল, হিস্ট্রি, রিভিউ)
+│   │   ├── email_verification.html   # ইমেইল ভেরিফিকেশন টেমপ্লেট
+│   │   └── profile_update.html       # প্রোফাইল আপডেট ফর্ম
+│   ├── static/accounts/              # অ্যাপ-স্পেসিফিক স্ট্যাটিক ফাইল
+│   │   ├── css/                      # কাস্টম CSS
+│   │   └── js/                       # কাস্টম JavaScript
+│   ├── models.py                     # কাস্টম ইউজার মডেল (যদি প্রয়োজন হয়)
+│   ├── views.py                      # লগইন, রেজিস্ট্রেশন, ড্যাশবোর্ড ভিউ
+│   ├── urls.py                       # অথেনটিকেশন URL রাউটিং
+│   ├── forms.py                      # লগইন/রেজিস্ট্রেশন ফর্ম
+│   ├── admin.py                      # অ্যাডমিন কনফিগারেশন
+│   └── utils.py                      # ইমেইল ভেরিফিকেশন ফাংশন
+├── payments/                         # পেমেন্ট ইন্টিগ্রেশন অ্যাপ
+│   ├── migrations/                   # ডাটাবেস মাইগ্রেশন ফাইল
+│   ├── templates/payments/           # পেমেন্ট টেমপ্লেট
+│   │   ├── payment_success.html      # পেমেন্ট সাকসেস পেজ
+│   │   ├── payment_failed.html       # পেমেন্ট ফেইলড পেজ
+│   ├── models.py                     # পেমেন্ট মডেল (ট্রানজাকশন ডিটেইল)
+│   ├── views.py                      # SSLCommerz পেমেন্ট হ্যান্ডলিং ভিউ
+│   ├── urls.py                       # পেমেন্ট URL রাউটিং
+│   └── utils.py                      # SSLCommerz API ইন্টিগ্রেশন ফাংশন
+├── static/                           # গ্লোবাল স্ট্যাটিক ফাইল
+│   ├── css/                          # গ্লোবাল CSS (Bootstrap/Tailwind)
+│   ├── js/                           # গ্লোবাল JavaScript
+│   └── images/                       # গ্লোবাল ইমেজ (লোগো, ফেভিকন)
+├── templates/                        # গ্লোবাল টেমপ্লেট
+│   ├── base.html                     # বেস টেমপ্লেট (ন্যাভবার, ফুটার)
+│   ├── 404.html                      # 404 এরর পেজ
+│   └── 500.html                      # 500 এরর পেজ
+├── media/                            # আপলোডেড ফাইল (প্রোডাক্ট ইমেজ)
+├── .env                              # এনভায়রনমেন্ট ভ্যারিয়েবল (DB_URL, SECRET_KEY, SSLCommerz keys)
+├── manage.py                         # Django ম্যানেজমেন্ট স্ক্রিপ্ট
+├── requirements.txt                  # Python ডিপেন্ডেন্সি (django, psycopg2, python-decouple)
+├── README.md                         # প্রজেক্ট ডকুমেন্টেশন
+└── .gitignore                        # Git ignore file

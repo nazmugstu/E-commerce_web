@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}কার্ট{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold mb-4">আপনার কার্ট</h1>
+    {% if cart_items %}
+    <div class="bg-white shadow-lg rounded-lg p-4">
+        {% for item in cart_items %}
+        <div class="flex items-center border-b py-4">
+            <div class="w-1/4">
+                {% if item.product.image %}
+                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="w-full h-24 object-cover rounded">
+                {% else %}
+                <img src="{% static 'images/placeholder.jpg' %}" alt="Placeholder" class="w-full h-24 object-cover rounded">
+                {% endif %}
+            </div>
+            <div class="w-2/4 pl-4">
+                <h3 class="text-lg font-semibold">{{ item.product.name }}</h3>
+                <p class="text-gray-700">{{ item.product.price }} BDT</p>
+            </div>
+            <div class="w-1/4 flex items-center">
+                <form action="{% url 'core:update_cart_item' item.id %}" method="POST" class="flex items-center">
+                    {% csrf_token %}
+                    <input type="hidden" name="item_id" value="{{ item.id }}">
+                    <input type="number" name="quantity" value="{{ item.quantity }}" min="0" max="{{ item.product.stock }}" class="border p-1 w-16">
+                    <button type="submit" name="update_quantity" class="bg-blue-500 text-white px-2 py-1 ml-2 rounded hover:bg-blue-600">Update</button>
+                </form>
+                <a href="{% url 'core:remove_from_cart' item.id %}" class="ml-4 text-red-500 hover:text-red-700">Remove</a>
+            </div>
+        </div>
+        {% endfor %}
+        <div class="mt-4 text-right">
+            <p class="text-xl font-semibold">মোট: {{ cart_total }} BDT</p>
+            <a href="{% url 'core:checkout' %}" class="bg-blue-500 text-white px-4 py-2 mt-2 inline-block rounded hover:bg-blue-600">চেকআউট</a>
+        </div>
+    </div>
+    {% else %}
+    <p class="text-center">আপনার কার্ট খালি।</p>
+    {% endif %}
+    <a href="{% url 'core:home' %}" class="mt-4 inline-block text-blue-500 hover:text-blue-700">শপিং চালিয়ে যান</a>
+</div>
+{% endblock %}

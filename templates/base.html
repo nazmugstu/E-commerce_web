@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}E-commerce{% endblock %}</title>
+    {% load static %}
+    <!-- Tailwind CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}">
+</head>
+<body class="font-roboto bg-gray-100">
+    <!-- Navbar from First Template with Icons and Mobile Toggle -->
+    <nav class="bg-white shadow-md fixed w-full z-10">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <!-- Logo -->
+            <a href="{% url 'core:home' %}" class="flex items-center space-x-2">
+                <img src="{% static 'images/logo.png' %}" alt="Makelots Logo" class="h-10 w-10">
+                <span class="text-2xl font-bold text-gray-800">Makelots</span>
+            </a>
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-button" class="mobile-menu-button md:hidden">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+            <!-- Menu Items -->
+            <ul id="nav-menu" class="nav-menu hidden md:flex items-center space-x-6">
+                <li>
+                    <a href="{% url 'core:home' %}" class="flex items-center space-x-1 text-gray-600 hover:text-blue-500 transition duration-300">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7m-9 2v10h6V12h-6z"></path>
+                        </svg>
+                        <span>Home</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'core:cart' %}" class="flex items-center space-x-1 text-gray-600 hover:text-blue-500 transition duration-300">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                        <span>Cart {% if request.user.is_authenticated %}(<span id="cart-count">{{ request.user.cart.items.count }}</span>){% endif %}</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'accounts:dashboard' %}" class="flex items-center space-x-1 text-gray-600 hover:text-blue-500 transition duration-300">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2a7.2 7.2 0 01-6-3.22c.03-1.99 4-3.08 6-3.08s5.97 1.09 6 3.08a7.2 7.2 0 01-6 3.22z"></path>
+                        </svg>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                {% if user.is_authenticated %}
+                <li>
+                    <a href="{% url 'accounts:logout' %}" class="flex items-center space-x-1 text-gray-600 hover:text-blue-500 transition duration-300">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h3a3 3 0 013 3v1"></path>
+                        </svg>
+                        <span>Logout</span>
+                    </a>
+                </li>
+                {% else %}
+                <li>
+                    <a href="{% url 'accounts:login' %}" class="flex items-center space-x-1 text-gray-600 hover:text-blue-500 transition duration-300">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+                        </svg>
+                        <span>Login</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'accounts:register' %}" class="flex items-center space-x-1 text-gray-600 hover:text-blue-500 transition duration-300">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                        </svg>
+                        <span>Register</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white shadow-md">
+            <a href="{% url 'core:home' %}" class="block px-4 py-2 text-gray-600 hover:bg-blue-500 hover:text-white flex items-center space-x-1">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7m-9 2v10h6V12h-6z"></path>
+                </svg>
+                <span>Home</span>
+            </a>
+            <a href="{% url 'core:cart' %}" class="block px-4 py-2 text-gray-600 hover:bg-blue-500 hover:text-white flex items-center space-x-1">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+                <span>Cart {% if request.user.is_authenticated %}(<span>{{ request.user.cart.items.count }}</span>){% endif %}</span>
+            </a>
+            <a href="{% url 'accounts:dashboard' %}" class="block px-4 py-2 text-gray-600 hover:bg-blue-500 hover:text-white flex items-center space-x-1">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2a7.2 7.2 0 01-6-3.22c.03-1.99 4-3.08 6-3.08s5.97 1.09 6 3.08a7.2 7.2 0 01-6 3.22z"></path>
+                </svg>
+                <span>Dashboard</span>
+            </a>
+            {% if user.is_authenticated %}
+            <a href="{% url 'accounts:logout' %}" class="block px-4 py-2 text-gray-600 hover:bg-blue-500 hover:text-white flex items-center space-x-1">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h3a3 3 0 013 3v1"></path>
+                </svg>
+                <span>Logout</span>
+            </a>
+            {% else %}
+            <a href="{% url 'accounts:login' %}" class="block px-4 py-2 text-gray-600 hover:bg-blue-500 hover:text-white flex items-center space-x-1">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 20" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+                </svg>
+                <span>Login</span>
+            </a>
+            <a href="{% url 'accounts:register' %}" class="block px-4 py-2 text-gray-600 hover:bg-blue-500 hover:text-white flex items-center space-x-1">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                </svg>
+                <span>Register</span>
+            </a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <main class="pt-20">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Professional Footer (Unchanged from Second Template) -->
+    <footer class="bg-gray-800 text-white py-10">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Logo and Tagline -->
+                <div>
+                    <a href="{% url 'core:home' %}" class="flex items-center space-x-2 mb-4">
+                        <img src="{% static 'images/logo.png' %}" alt="Makelots Logo" class="h-12 w-12">
+                        <span class="text-xl font-bold">Makelots</span>
+                    </a>
+                    <p class="text-sm">Empowering Small Businesses to Make Lots of Customers, Clients, Leads, Connections and more!</p>
+                </div>
+
+                <!-- Useful Links -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Useful Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-blue-400 transition duration-300">Donations</a></li>
+                        <li><a href="#" class="hover:text-blue-400 transition duration-300">Learning Resources</a></li>
+                        <li><a href="#" class="hover:text-blue-400 transition duration-300">Request A Quote</a></li>
+                        <li><a href="#" class="hover:text-blue-400 transition duration-300">Our Portfolio</a></li>
+                        <li><a href="#" class="hover:text-blue-400 transition duration-300">Website Development Agreement</a></li>
+                    </ul>
+                </div>
+
+                <!-- Company Links -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Company</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-blue-400 transition duration-300">About Us</a></li>
+                        <li><a href="#" class="hover:text-blue-400 transition duration-300">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-blue-400 transition duration-300">FAQ's</a></li>
+                        <li><a href="#" class="hover:text-blue-400 transition duration-300">Testimonials</a></li>
+                        <li><a href="#" class="hover:text-blue-400 transition duration-300">Mission Statement</a></li>
+                        <li><a href="#" class="hover:text-blue-400 transition duration-300">Vision Statement</a></li>
+                        <li><a href="#" class="hover:text-blue-400 transition duration-300">Core Values</a></li>
+                        <li><a href="#" class="hover:text-blue-400 transition duration-300">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-blue-400 transition duration-300">Terms and Conditions</a></li>
+                    </ul>
+                </div>
+
+                <!-- Social Media -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Follow Us</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-blue-400 transition duration-300">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2.04c-5.5 0-9.96 4.46-9.96 9.96 0 4.95 3.62 9.04 8.36 9.78v-6.92H7.58v-2.86h2.82V9.64c0-2.78 1.66-4.3 4.18-4.3 1.22 0 2.5.22 2.5.22v2.74h-1.4c-1.38 0-1.82.86-1.82 1.74v2.08h3.1l-.5 2.86h-2.6v6.92c4.74-.74 8.36-4.83 8.36-9.78 0-5.5-4.46-9.96-9.96-9.96z"></path>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-blue-400 transition duration-300">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M23.95 4.57a9.94 9.94 0 01-2.83.77 4.93 4.93 0 002.16-2.72c-.95.56-2 .96-3.12 1.18a4.92 4.92 0 00-8.38 4.48A13.94 13.94 0 011.67 3.15 4.92 4.92 0 003.2 9.7a4.9 4.9 0 01-2.23-.62v .06a4.92 4.92 0 003.95 4.82 4.9 4.9 0 01-2.22.08 4.92 4.92 0 004.6 3.42A9.87 9.87 0 010 19.54a13.93 13.93 0 007.55 2.21c9.06 0 14.01-7.51 14.01-14.01 0-.21 0-.42-.02-.63A10.02 10.02 0 0024 4.57z"></path>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-blue-400 transition duration-300">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M22.46 6c-.77.34-1.6.57-2.46.67A4.3 4.3 0 0019.74 4c-.86.52-1.81.89-2.83 1.09A4.28 4.28 0 0013.54 3c-2.37 0-4.3 1.93-4.3 4.3 0 .34.04.67.11 1A12.18 12.18 0 011.67 3.67a4.28 4.28 0 001.33 5.73 4.27 4.27 0 01-1.95-.54v .05a4.3 4.3 0 003.45 4.22 4.3 4.3 0 01-1.94.07 4.3 4.3 0 004.02 2.98A8.6 8.6 0 010 19.54a12.14 12.14 0 006.6 1.93c7.92 0 12.25-6.56 12.25-12.25 0-.19 0-.37-.01-.56A8.75 8.75 0 0024 6.34c-.89.4-1.84.67-2.54.79z"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-gray-700 text-center">
+                <p>© 2023 Makelots All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Mobile Menu -->
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

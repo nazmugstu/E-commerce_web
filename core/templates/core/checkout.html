@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load cart_filters %}
+
+{% block title %}চেকআউট{% endblock %}
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold mb-4">চেকআউট</h1>
+    {% if cart_items %}
+    <div class="bg-white shadow-lg rounded-lg p-4">
+        <h2 class="text-xl font-semibold mb-4">আপনার কার্ট</h2>
+        {% for item in cart_items %}
+        <div class="flex items-center border-b py-4">
+            <div class="w-1/4">
+                {% if item.product.image %}
+                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="w-full h-24 object-cover rounded">
+                {% else %}
+                <img src="{% static 'images/placeholder.jpg' %}" alt="Placeholder" class="w-full h-24 object-cover rounded">
+                {% endif %}
+            </div>
+            <div class="w-2/4 pl-4">
+                <h3 class="text-lg font-semibold">{{ item.product.name }}</h3>
+                <p class="text-gray-700">{{ item.product.price }} BDT x {{ item.quantity }}</p>
+            </div>
+            <div class="w-1/4 text-right">
+                <p class="text-gray-700">{{ item.product.price|multiply:item.quantity }} BDT</p>
+            </div>
+        </div>
+        {% endfor %}
+        <div class="mt-4 text-right">
+            <p class="text-xl font-semibold">মোট: {{ cart_total }} BDT</p>
+        </div>
+        <form method="post" action="{% url 'payments:process_payment' %}" class="mt-4 text-right">
+            {% csrf_token %}
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">পেমেন্ট করুন</button>
+        </form>
+    </div>
+    {% else %}
+    <p class="text-center">আপনার কার্ট খালি।</p>
+    {% endif %}
+    <a href="{% url 'core:cart' %}" class="mt-4 inline-block text-blue-500 hover:text-blue-700">কার্টে ফিরুন</a>
+</div>
+{% endblock %}

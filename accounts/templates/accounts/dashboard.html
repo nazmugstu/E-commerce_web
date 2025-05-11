@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}ড্যাশবোর্ড{% endblock %}
+{% block content %}
+<div class="container">
+    <h1>ইউজার ড্যাশবোর্ড</h1>
+    <p>স্বাগতম, {{ user.username }}!</p>
+    <a href="{% url 'accounts:logout' %}">লগআউট</a>
+</div>
+{% endblock %}

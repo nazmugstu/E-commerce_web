@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ product.name }}{% endblock %}
+{% block content %}
+<div class="container">
+    <h2>{{ product.name }}</h2>
+    {% if product.image %}
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-width: 300px;">
+    {% else %}
+        <img src="{% static 'images/placeholder.jpg' %}" alt="Placeholder" style="max-width: 300px;">
+    {% endif %}
+    <p>Price: {{ product.price }} BDT</p>
+    <p>Stock: {{ product.stock }}</p>
+    <p>Description: {{ product.description }}</p>
+    <form action="{% url 'core:add_to_cart' product.id %}" method="POST">
+        {% csrf_token %}
+        <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}">
+        <button type="submit">Add to Cart</button>
+    </form>
+    <a href="{% url 'core:cart' %}">View Cart</a>
+</div>
+{% endblock %}
