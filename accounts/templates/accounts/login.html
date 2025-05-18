@@ -1,22 +1,27 @@
 {% extends 'base.html' %}
-{% block title %}লগইন{% endblock %}
+{% block title %}Login{% endblock %}
+{% block navbar %}{% endblock %}
 {% block content %}
-<div class="container">
-    <h1>লগইন</h1>
-    <form method="post" action="{% url 'accounts:login' %}">
-        {% csrf_token %}
-        {{ form.as_p }}
-        {% if form.errors %}
-            <ul>
-                {% for field in form %}
-                    {% for error in field.errors %}
-                        <li>{{ error }}</li>
+<div class="container mx-auto px-4 py-16 flex justify-center items-center min-h-screen">
+    <div class="bg-white shadow-xl rounded-lg p-8 w-full max-w-md">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Login</h1>
+        <form method="post" action="{% url 'accounts:login' %}" class="space-y-4">
+            {% csrf_token %}
+            {{ form.as_p }}
+            {% if form.errors %}
+                <ul class="text-red-500 text-sm">
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
                     {% endfor %}
-                {% endfor %}
-            </ul>
-        {% endif %}
-        <button type="submit">লগইন</button>
-    </form>
-    <p>অ্যাকাউন্ট নেই? <a href="{% url 'accounts:register' %}">রেজিস্টার করুন</a></p>
+                </ul>
+            {% endif %}
+            <button type="submit" class="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition duration-300">Login</button>
+        </form>
+        <p class="mt-4 text-center text-gray-600">Don't have an account? <a href="{% url 'accounts:register' %}" class="text-blue-500 hover:text-blue-700">Register</a></p>
+        <p class="mt-2 text-center text-gray-600">Back to <a href="{% url 'core:home' %}" class="text-blue-500 hover:text-blue-700">Home</a></p>
+    </div>
 </div>
 {% endblock %}
+{% block footer %}{% endblock %}

@@ -63,4 +63,4 @@ ecommerce_project/
 ├── manage.py                         # Django ম্যানেজমেন্ট স্ক্রিপ্ট
 ├── requirements.txt                  # Python ডিপেন্ডেন্সি (django, psycopg2, python-decouple)
 ├── README.md                         # প্রজেক্ট ডকুমেন্টেশন
-└── .gitignore                        # Git ignore file
+└── .gitignore                        # Git ইগনোর ফাইল make স্টাকচার cmd command 

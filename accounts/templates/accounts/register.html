@@ -1,22 +1,38 @@
 {% extends 'base.html' %}
-{% block title %}রেজিস্ট্রেশন{% endblock %}
+{% block title %}Login{% endblock %}
+{% block navbar %}{% endblock %}
 {% block content %}
-<div class="container">
-    <h1>রেজিস্ট্রেশন</h1>
-    <form method="post" action="{% url 'accounts:register' %}">
-        {% csrf_token %}
-        {{ form.as_p }}
-        {% if form.errors %}
-            <ul>
-                {% for field in form %}
-                    {% for error in field.errors %}
+<div class="container mx-auto px-4 py-16 flex justify-center items-center min-h-screen">
+    <div class="bg-white shadow-2xl rounded-xl p-10 w-full max-w-md">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">Login</h1>
+        <form method="post" action="{% url 'accounts:login' %}" class="space-y-6">
+            {% csrf_token %}
+            {% for field in form %}
+                <div>
+                    <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ field.label }}</label>
+                    <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" id="{{ field.id_for_label }}"
+                           class="mt-1 w-full px-4 py-2 border {% if field.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                           {% if field.value %}value="{{ field.value }}"{% endif %}
+                           {% if field.field.required %}required{% endif %}>
+                    {% if field.errors %}
+                        {% for error in field.errors %}
+                            <p class="text-red-500 text-xs mt-1">{{ error }}</p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            {% endfor %}
+            {% if form.non_field_errors %}
+                <ul class="text-red-500 text-sm">
+                    {% for error in form.non_field_errors %}
                         <li>{{ error }}</li>
                     {% endfor %}
-                {% endfor %}
-            </ul>
-        {% endif %}
-        <button type="submit">রেজিস্টার</button>
-    </form>
-    <p>ইতিমধ্যে অ্যাকাউন্ট আছে? <a href="{% url 'accounts:login' %}">লগইন করুন</a></p>
+                </ul>
+            {% endif %}
+            <button type="submit" class="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition duration-300">Login</button>
+        </form>
+        <p class="mt-6 text-center text-gray-600">Don't have an account? <a href="accounts:register' %}" class="text-blue-500 hover:text-blue-700 transition duration-200">Register</a></p>
+        <p class="mt-2 text-center text-gray-600">Back to <a href="{% url 'core:home' %}" class="text-blue-500 hover:text-blue-700 transition duration-200">Home</a></p>
+    </div>
 </div>
 {% endblock %}
+{% block footer %}{% endblock %}

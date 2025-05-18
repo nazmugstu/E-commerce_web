@@ -1,9 +1,113 @@
 {% extends 'base.html' %}
-{% block title %}ড্যাশবোর্ড{% endblock %}
+{% load static %}
+
+{% block title %}Dashboard - {{ user.username }}{% endblock %}
+
 {% block content %}
-<div class="container">
-    <h1>ইউজার ড্যাশবোর্ড</h1>
-    <p>স্বাগতম, {{ user.username }}!</p>
-    <a href="{% url 'accounts:logout' %}">লগআউট</a>
+<div class="container mx-auto px-6 py-16 bg-gradient-to-br from-blue-100 via-indigo-50 to-purple-100 min-h-screen">
+    <!-- Header -->
+    <div class="bg-white shadow-xl rounded-2xl p-10 mb-10 transition-all duration-300 hover:shadow-2xl border border-blue-200">
+        <h1 class="text-4xl font-bold text-center text-gray-900 mb-3">Welcome, {{ user.username }}!</h1>
+        <p class="text-gray-600 text-center text-lg">View all your account details and activities on your dashboard.</p>
+        <a href="{% url 'accounts:logout' %}" class="inline-block mt-6 bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-all duration-300 shadow-md hover:shadow-lg">Logout</a>
+    </div>
+
+    <!-- User Profile -->
+    <div class="bg-white shadow-xl rounded-2xl p-10 mb-10 transition-all duration-300 hover:shadow-2xl border border-teal-200">
+        <h2 class="text-2xl font-semibold text-gray-900 mb-6">Profile Information</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-4">
+                <p class="text-gray-700"><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+                <p class="text-gray-700"><strong>Email:</strong> {{ user.email }}</p>
+                <p class="text-gray-700"><strong>Phone:</strong> {{ user.profile.phone|default:"Not Set" }}</p>
+                <p class="text-gray-700"><strong>Address:</strong> {{ user.profile.address|default:"Not Set" }}</p>
+            </div>
+            <div class="flex items-center justify-start md:justify-end">
+                <a href="{% url 'accounts:profile_update' %}" class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-all duration-300 shadow-md hover:shadow-lg">Update Profile</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Summary -->
+    <div class="bg-white shadow-xl rounded-2xl p-10 mb-10 transition-all duration-300 hover:shadow-2xl border border-orange-200">
+        <h2 class="text-2xl font-semibold text-gray-900 mb-6">Your Cart</h2>
+        {% if cart_items %}
+        <p class="text-gray-700 text-lg">Items in Cart: {{ cart_items|length }}</p>
+        <p class="text-gray-700 text-lg">Total Price: {{ cart_total }} BDT</p>
+        <a href="{% url 'core:cart' %}" class="inline-block mt-6 bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-all duration-300 shadow-md hover:shadow-lg">View Cart</a>
+        {% else %}
+        <p class="text-gray-600 text-lg">Your cart is empty.</p>
+        <a href="{% url 'core:home' %}" class="inline-block mt-6 bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-all duration-300 shadow-md hover:shadow-lg">Start Shopping</a>
+        {% endif %}
+    </div>
+
+    <!-- Order History -->
+    <div class="bg-white shadow-xl rounded-2xl p-10 mb-10 transition-all duration-300 hover:shadow-2xl border border-red-200">
+        <h2 class="text-2xl font-semibold text-gray-900 mb-6">Order History</h2>
+        {% if orders %}
+        <div class="overflow-x-auto">
+            <table class="w-full table-auto border-collapse">
+                <thead>
+                    <tr class="bg-gray-100 text-gray-800">
+                        <th class="px-6 py-4 text-left font-semibold">Order Number</th>
+                        <th class="px-6 py-4 text-left font-semibold">Date</th>
+                        <th class="px-6 py-4 text-left font-semibold">Total Price</th>
+                        <th class="px-6 py-4 text-left font-semibold">Status</th>
+                        <th class="px-6 py-4 text-left font-semibold">Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr class="border-b hover:bg-gray-50 transition-all duration-200">
+                        <td class="px-6 py-4">{{ order.order_number }}</td>
+                        <td class="px-6 py-4">{{ order.created_at|date:"d M Y" }}</td>
+                        <td class="px-6 py-4">{{ order.total_price }} BDT</td>
+                        <td class="px-6 py-4">{{ order.status }}</td>
+                        <td class="px-6 py-4">
+                            <a href="{% url 'accounts:order_detail' order.id %}" class="text-indigo-600 hover:text-indigo-800 hover:underline transition-colors duration-200">Details</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-gray-600 text-lg">You have no orders.</p>
+        <a href="{% url 'core:home' %}" class="inline-block mt-6 bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-all duration-300 shadow-md hover:shadow-lg">Start Shopping</a>
+        {% endif %}
+    </div>
+
+    <!-- Recommended Products -->
+    <div class="bg-white shadow-xl rounded-2xl p-10 transition-all duration-300 hover:shadow-2xl border border-purple-200">
+        <h2 class="text-2xl font-semibold text-gray-900 mb-6">Recommended Products</h2>
+        {% if recommended_products %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {% for product in recommended_products %}
+            <div class="bg-white shadow-lg rounded-xl overflow-hidden transform hover:scale-105 hover:shadow-xl transition-all duration-300 border border-gray-100">
+                {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-48 object-cover hover:opacity-90 transition-opacity duration-300">
+                {% else %}
+                <img src="{% static 'images/placeholder.jpg' %}" alt="Placeholder" class="w-full h-48 object-cover hover:opacity-90 transition-opacity duration-300">
+                {% endif %}
+                <div class="p-5">
+                    <h3 class="text-lg font-semibold text-gray-800">{{ product.name }}</h3>
+                    <p class="text-gray-600 mt-2">{{ product.price }} BDT</p>
+                    <div class="mt-4 flex gap-3">
+                        <a href="{% url 'core:product_detail' product.id %}" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-all duration-300">Details</a>
+                        <form action="{% url 'core:add_to_cart' product.id %}" method="POST" class="inline">
+                            {% csrf_token %}
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-all duration-300">Add to Cart</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-gray-600 text-lg">No products recommended.</p>
+        <a href="{% url 'core:home' %}" class="inline-block mt-6 bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-all duration-300 shadow-md hover:shadow-lg">View All Products</a>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}

@@ -1,11 +1,110 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Profile Update{% endblock %}
 {% block content %}
-<div class="container">
-    <h1>Update Profile</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Update</button>
-    </form>
+<div class="container mx-auto px-6 py-16 bg-gradient-to-br from-blue-200 via-indigo-100 to-purple-200 min-h-screen">
+    <!-- Header -->
+    <div class="bg-white shadow-xl rounded-2xl p-10 mb-10 transition-all duration-300 hover:shadow-2xl">
+        <h1 class="text-4xl font-bold text-center text-gray-900">Profile Update</h1>
+        <p class="text-gray-600 text-center mt-4 text-lg">Update your profile information.</p>
+    </div>
+
+    <!-- Current Profile Information Preview -->
+    <div class="bg-white shadow-xl rounded-2xl p-10 mb-10 transition-all duration-300 hover:shadow-2xl">
+        <h2 class="text-2xl font-semibold text-gray-900 mb-8">Current Information</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <p class="text-gray-700"><strong>First Name:</strong> {{ user.first_name|default:"Not Set" }}</p>
+            <p class="text-gray-700"><strong>Last Name:</strong> {{ user.last_name|default:"Not Set" }}</p>
+            <p class="text-gray-700"><strong>Email:</strong> {{ user.email|default:"Not Set" }}</p>
+            <p class="text-gray-700"><strong>Phone Number:</strong> {{ user.profile.phone|default:"Not Set" }}</p>
+            <p class="md:col-span-2 text-gray-700"><strong>Address:</strong> {{ user.profile.address|default:"Not Set" }}</p>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <div class="bg-white shadow-xl rounded-2xl p-10 transition-all duration-300 hover:shadow-2xl">
+        <form method="post" class="space-y-10">
+            {% csrf_token %}
+            {% if form.errors %}
+                <div class="bg-red-50 border-l-4 border-red-600 text-red-800 p-6 mb-8 rounded-r-xl" role="alert">
+                    <p class="font-bold text-lg">Errors:</p>
+                    <ul class="list-disc ml-6 mt-2">
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- First Name -->
+                <div>
+                    <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-medium text-gray-800">First Name</label>
+                    <div class="mt-2">
+                        <input type="text" name="{{ form.first_name.name }}" id="{{ form.first_name.id_for_label }}"
+                               value="{{ form.first_name.value|default_if_none:'' }}"
+                               class="block w-full border {% if form.first_name.errors %}border-red-600{% else %}border-gray-300{% endif %} rounded-lg shadow-sm py-3 px-5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-300 bg-gray-50">
+                    </div>
+                    {% if form.first_name.errors %}
+                        <p class="mt-2 text-sm text-red-600">{{ form.first_name.errors }}</p>
+                    {% endif %}
+                </div>
+                <!-- Last Name -->
+                <div>
+                    <label for="{{ form.last_name.id_for_label }}" class="block text-sm font-medium text-gray-800">Last Name</label>
+                    <div class="mt-2">
+                        <input type="text" name="{{ form.last_name.name }}" id="{{ form.last_name.id_for_label }}"
+                               value="{{ form.last_name.value|default_if_none:'' }}"
+                               class="block w-full border {% if form.last_name.errors %}border-red-600{% else %}border-gray-300{% endif %} rounded-lg shadow-sm py-3 px-5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-300 bg-gray-50">
+                    </div>
+                    {% if form.last_name.errors %}
+                        <p class="mt-2 text-sm text-red-600">{{ form.last_name.errors }}</p>
+                    {% endif %}
+                </div>
+                <!-- Email -->
+                <div>
+                    <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-gray-800">Email</label>
+                    <div class="mt-2">
+                        <input type="email" name="{{ form.email.name }}" id="{{ form.email.id_for_label }}"
+                               value="{{ form.email.value|default_if_none:'' }}"
+                               class="block w-full border {% if form.email.errors %}border-red-600{% else %}border-gray-300{% endif %} rounded-lg shadow-sm py-3 px-5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-300 bg-gray-50">
+                    </div>
+                    {% if form.email.errors %}
+                        <p class="mt-2 text-sm text-red-600">{{ form.email.errors }}</p>
+                    {% endif %}
+                </div>
+                <!-- Phone Number -->
+                <div>
+                    <label for="{{ form.phone.id_for_label }}" class="block text-sm font-medium text-gray-800">Phone Number</label>
+                    <div class="mt-2">
+                        <input type="text" name="{{ form.phone.name }}" id="{{ form.phone.id_for_label }}"
+                               value="{{ form.phone.value|default_if_none:'' }}"
+                               class="block w-full border {% if form.phone.errors %}border-red-600{% else %}border-gray-300{% endif %} rounded-lg shadow-sm py-3 px-5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-300 bg-gray-50">
+                    </div>
+                    {% if form.phone.errors %}
+                        <p class="mt-2 text-sm text-red-600">{{ form.phone.errors }}</p>
+                    {% endif %}
+                </div>
+                <!-- Address -->
+                <div class="md:col-span-2">
+                    <label for="{{ form.address.id_for_label }}" class="block text-sm font-medium text-gray-800">Address</label>
+                    <div class="mt-2">
+                        <textarea name="{{ form.address.name }}" id="{{ form.address.id_for_label }}"
+                                  class="block w-full border {% if form.address.errors %}border-red-600{% else %}border-gray-300{% endif %} rounded-lg shadow-sm py-3 px-5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-300 bg-gray-50"
+                                  rows="5">{{ form.address.value|default_if_none:'' }}</textarea>
+                    </div>
+                    {% if form.address.errors %}
+                        <p class="mt-2 text-sm text-red-600">{{ form.address.errors }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="flex gap-6 justify-center">
+                <button type="submit" class="bg-indigo-600 text-white font-semibold px-10 py-3 rounded-xl hover:bg-indigo-700 transition duration-300 shadow-md">Update</button>
+                <a href="{% url 'accounts:dashboard' %}" class="bg-gray-300 text-gray-800 font-semibold px-10 py-3 rounded-xl hover:bg-gray-400 transition duration-300 shadow-md">Back</a>
+            </div>
+        </form>
+    </div>
 </div>
 {% endblock %}
