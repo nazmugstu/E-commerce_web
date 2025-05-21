@@ -1,7 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
-from .models import Profile
+from .models import CustomUser, Profile  # Import CustomUser
 
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=150, required=True)
@@ -11,18 +10,18 @@ class RegisterForm(UserCreationForm):
     email = forms.EmailField(required=True)
 
     class Meta:
-        model = User
+        model = CustomUser  # Use CustomUser instead of User
         fields = ['username', 'email', 'password1', 'password2']
 
 class ProfileUpdateForm(forms.ModelForm):
-    first_name = forms.CharField(label="প্রথম নাম", required=False)
-    last_name = forms.CharField(label="শেষ নাম", required=False)
-    email = forms.EmailField(label="ইমেইল", required=True)
+    first_name = forms.CharField(label="First Name", required=False)
+    last_name = forms.CharField(label="Last Name", required=False)
+    email = forms.EmailField(label="Email", required=True)
 
     class Meta:
         model = Profile
         fields = ['phone', 'address']
         labels = {
-            'phone': 'ফোন নম্বর',
-            'address': 'ঠিকানা',
+            'phone': 'Phone Number',
+            'address': 'Address',
         }

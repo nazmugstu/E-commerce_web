@@ -24,7 +24,7 @@ INSTALLED_APPS = [
     # Local apps
     'core.apps.CoreConfig',
     'payments.apps.PaymentsConfig',
-    'accounts',
+    'accounts.apps.AccountsConfig',  # Use AccountsConfig instead of 'accounts'
 ]
 
 MIDDLEWARE = [

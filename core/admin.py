@@ -5,13 +5,23 @@ from .models import Category, Product, Cart, CartItem, Order, OrderItem, Review
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ['name', 'slug', 'created_at']
     prepopulated_fields = {'slug': ('name',)}
+    search_fields = ['name']
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['name', 'category', 'price', 'discount_price', 'stock', 'is_featured', 'created_at']
+    list_display = ['name', 'category', 'price', 'discount_price', 'stock', 'is_featured', 'get_image', 'created_at']
     list_filter = ['category', 'is_featured']
     search_fields = ['name', 'description']
     list_editable = ['price', 'discount_price', 'stock', 'is_featured']
+    fields = ['name', 'description', 'price', 'discount_price', 'image', 'image_url', 'stock', 'category', 'is_featured', 'get_image_display']
+    readonly_fields = ['get_image_display']
+
+    def get_image_display(self, obj):
+        """
+        Display the resolved image URL (from get_image property) in the admin.
+        """
+        return obj.get_image
+    get_image_display.short_description = "Image URL"
 
 @admin.register(Cart)
 class CartAdmin(admin.ModelAdmin):
@@ -36,6 +46,6 @@ class OrderItemAdmin(admin.ModelAdmin):
 
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
-    list_display = ['product', 'user', 'rating', 'created_at']
+    list_display = ['product', 'user', 'rating', 'created_at']  # Fixed: Removed space in 'list display'
     list_filter = ['rating']
     search_fields = ['product__name', 'user__username']

@@ -1,6 +1,7 @@
+# core/models.py
 from django.db import models
 from django.conf import settings
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator, URLValidator
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -11,8 +12,8 @@ class Category(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = "ক্যাটাগরি"
-        verbose_name_plural = "ক্যাটাগরিসমূহ"
+        verbose_name = "Category"
+        verbose_name_plural = "categories"
         ordering = ['name']
 
 class Product(models.Model):
@@ -21,8 +22,9 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     discount_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     image = models.ImageField(upload_to='products/', blank=True, null=True)
+    image_url = models.URLField(blank=True, null=True, validators=[URLValidator()])
     stock = models.PositiveIntegerField()
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
+    category = models.ForeignKey('Category', on_delete=models.SET_NULL, null=True, blank=True)
     is_featured = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -34,9 +36,18 @@ class Product(models.Model):
     def average_rating(self):
         return self.reviews.aggregate(models.Avg('rating'))['rating__avg'] or 0
 
+    @property
+    def get_image(self):
+        """
+        Returns the uploaded image URL if available, otherwise the image_url field or a static placeholder.
+        """
+        if self.image and hasattr(self.image, 'url'):
+            return self.image.url
+        return self.image_url or "/static/images/placeholder.jpg"
+
     class Meta:
-        verbose_name = "প্রোডাক্ট"
-        verbose_name_plural = "প্রোডাক্টসমূহ"
+        verbose_name = "Product"
+        verbose_name_plural = "Products"
         ordering = ['-created_at']
         indexes = [
             models.Index(fields=['name', 'category']),
@@ -54,8 +65,8 @@ class Cart(models.Model):
         return sum(item.product.price * item.quantity for item in self.cartitem_set.all())
 
     class Meta:
-        verbose_name = "কার্ট"
-        verbose_name_plural = "কার্টসমূহ"
+        verbose_name = "Cart"
+        verbose_name_plural = "Carts"
         ordering = ['-created_at']
 
 class CartItem(models.Model):
@@ -67,9 +78,9 @@ class CartItem(models.Model):
         return f"{self.quantity} x {self.product.name}"
 
     class Meta:
-        verbose_name = "কার্ট আইটেম"
-        verbose_name_plural = "কার্ট আইটেমসমূহ"
-        unique_together = ['cart', 'product']  # একই প্রোডাক্ট একাধিকবার যোগ হবে না
+        verbose_name = "Cart Item"
+        verbose_name_plural = "Cart Items"
+        unique_together = ['cart', 'product']
 
 class Order(models.Model):
     STATUS_CHOICES = (
@@ -98,8 +109,8 @@ class Order(models.Model):
         return f"Order {self.id} by {self.user.username}"
 
     class Meta:
-        verbose_name = "অর্ডার"
-        verbose_name_plural = "অর্ডারসমূহ"
+        verbose_name = "Order"
+        verbose_name_plural = "Orders"
         ordering = ['-created_at']
         indexes = [
             models.Index(fields=['user', 'created_at']),
@@ -109,14 +120,14 @@ class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)  # অর্ডারের সময়ের দাম
+    price = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
         return f"{self.quantity} x {self.product.name} in Order {self.order.id}"
 
     class Meta:
-        verbose_name = "অর্ডার আইটেম"
-        verbose_name_plural = "অর্ডার আইটেমসমূহ"
+        verbose_name = "Order Item"
+        verbose_name_plural = "Order Items"
 
 class Review(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -132,10 +143,10 @@ class Review(models.Model):
         return f"Review by {self.user.username} for {self.product.name}"
 
     class Meta:
-        verbose_name = "রিভিউ"
-        verbose_name_plural = "রিভিউসমূহ"
+        verbose_name = "Review"
+        verbose_name_plural = "Reviews"
         ordering = ['-created_at']
-        unique_together = ['user', 'product']  # একজন ইউজার একটি প্রোডাক্টে একবার রিভিউ দিতে পারবে
+        unique_together = ['user', 'product']
         indexes = [
             models.Index(fields=['product', 'created_at']),
         ]

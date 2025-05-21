@@ -1,22 +1,124 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}{{ product.name }}{% endblock %}
+
+{% block title %}{{ product.name }} - E-Commerce{% endblock %}
+
 {% block content %}
-<div class="container">
-    <h2>{{ product.name }}</h2>
-    {% if product.image %}
-        <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-width: 300px;">
-    {% else %}
-        <img src="{% static 'images/placeholder.jpg' %}" alt="Placeholder" style="max-width: 300px;">
+<style>
+    /* Custom styles for product detail */
+    .product-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    }
+    input:focus, button:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
+    }
+    .review-card {
+        border-left: 4px solid #4f46e5;
+        padding-left: 1rem;
+    }
+</style>
+
+<div class="container mx-auto px-6 py-12 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen">
+    <!-- Product Detail Section -->
+    <div class="bg-white shadow-2xl rounded-2xl p-8 mb-12">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Product Image -->
+            <div class="flex justify-center">
+                <img src="{{ product.get_image }}" alt="{{ product.name }}" class="w-full max-w-md h-auto object-cover rounded-lg shadow-md">
+            </div>
+            <!-- Product Info -->
+            <div>
+                <h2 class="text-3xl font-extrabold text-gray-900 mb-4">{{ product.name }}</h2>
+                <div class="flex items-center mb-4">
+                    {% if product.average_rating %}
+                        <p class="text-yellow-500 font-semibold text-lg">★ {{ product.average_rating|floatformat:1 }}</p>
+                        <span class="ml-2 text-gray-600">({{ product.reviews.count }} reviews)</span>
+                    {% else %}
+                        <p class="text-gray-600">No reviews yet</p>
+                    {% endif %}
+                </div>
+                <p class="text-gray-700 text-lg mb-4">
+                    {% if product.discount_price %}
+                        <span class="line-through text-gray-400">{{ product.price }} BDT</span>
+                        <span class="text-red-600 font-semibold ml-2">{{ product.discount_price }} BDT</span>
+                    {% else %}
+                        {{ product.price }} BDT
+                    {% endif %}
+                </p>
+                <p class="text-gray-600 mb-4"><strong>Stock:</strong> {{ product.stock }} items available</p>
+                <p class="text-gray-600 mb-6"><strong>Description:</strong> {{ product.description|default:"No description available." }}</p>
+                
+                <!-- Add to Cart Form -->
+                <form action="{% url 'core:add_to_cart' product.id %}" method="POST" class="mb-6">
+                    {% csrf_token %}
+                    <div class="flex items-center gap-4">
+                        <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" class="border border-gray-200 p-3 rounded-xl w-24 focus:ring-0 focus:border-indigo-600 bg-gray-50 text-gray-800 transition duration-300">
+                        <button type="submit" class="bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 transition duration-300 shadow-md hover:shadow-lg font-semibold">Add to Cart</button>
+                    </div>
+                </form>
+                
+                <a href="{% url 'core:cart' %}" class="bg-gray-200 text-gray-700 px-6 py-3 rounded-xl hover:bg-gray-300 transition duration-300 font-medium">View Cart</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reviews Section -->
+    {% if reviews %}
+        <div class="mb-12">
+            <h3 class="text-2xl font-bold text-gray-900 mb-6">Customer Reviews</h3>
+            <div class="space-y-4">
+                {% for review in reviews %}
+                    <div class="review-card bg-white p-4 rounded-lg shadow-md">
+                        <p class="text-yellow-500 font-semibold">★ {{ review.rating }}</p>
+                        <p class="text-gray-600">{{ review.comment|default:"No comment provided." }}</p>
+                        <p class="text-sm text-gray-500 mt-2">By {{ review.user.username }} on {{ review.created_at|date:"F j, Y" }}</p>
+                    </div>
+                {% empty %}
+                    <p class="text-gray-600">No reviews yet.</p>
+                {% endfor %}
+            </div>
+        </div>
     {% endif %}
-    <p>Price: {{ product.price }} BDT</p>
-    <p>Stock: {{ product.stock }}</p>
-    <p>Description: {{ product.description }}</p>
-    <form action="{% url 'core:add_to_cart' product.id %}" method="POST">
-        {% csrf_token %}
-        <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}">
-        <button type="submit">Add to Cart</button>
-    </form>
-    <a href="{% url 'core:cart' %}">View Cart</a>
+
+    <!-- Related Products Section -->
+    {% if related_products %}
+        <div class="mb-12">
+            <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">Related Products</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {% for related_product in related_products %}
+                    <div class="product-card bg-white shadow-lg rounded-xl p-6 border border-gray-100">
+                        <img src="{{ related_product.get_image }}" alt="{{ related_product.name }}" class="w-full h-56 object-cover rounded-lg">
+                        <h3 class="text-xl font-semibold text-gray-800 mt-4">{{ related_product.name }}</h3>
+                        <div class="flex items-center justify-between mt-3">
+                            <p class="text-gray-700 text-lg">
+                                {% if related_product.discount_price %}
+                                    <span class="line-through text-gray-400">{{ related_product.price }} BDT</span>
+                                    <span class="text-red-600 font-semibold ml-2">{{ related_product.discount_price }} BDT</span>
+                                {% else %}
+                                    {{ related_product.price }} BDT
+                                {% endif %}
+                            </p>
+                            {% if related_product.average_rating %}
+                                <p class="text-yellow-500 font-semibold">★ {{ related_product.average_rating|floatformat:1 }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="mt-5 flex gap-4">
+                            <a href="{% url 'core:product_detail' related_product.id %}" class="bg-gray-200 text-gray-700 px-5 py-2 rounded-lg hover:bg-gray-300 transition duration-300 font-medium">Details</a>
+                            <form action="{% url 'core:add_to_cart' related_product.id %}" method="POST" class="inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="bg-indigo-600 text-white px-5 py-2 rounded-lg hover:bg-indigo-700 transition duration-300 font-medium">Add to Cart</button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
 </div>
 {% endblock %}
