@@ -1,4 +1,3 @@
-# core/models.py
 from django.db import models
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator, URLValidator
@@ -150,3 +149,30 @@ class Review(models.Model):
         indexes = [
             models.Index(fields=['product', 'created_at']),
         ]
+
+class Advertisement(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    image = models.ImageField(upload_to='ads/', blank=True, null=True)
+    image_url = models.URLField(blank=True, null=True, validators=[URLValidator()])
+    link = models.URLField(blank=True, null=True, validators=[URLValidator()])
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.title
+
+    @property
+    def get_image(self):
+        """
+        Returns the uploaded image URL if available, otherwise the image_url field or a static placeholder.
+        """
+        if self.image and hasattr(self.image, 'url'):
+            return self.image.url
+        return self.image_url or "/static/images/placeholder.jpg"
+
+    class Meta:
+        verbose_name = "Advertisement"
+        verbose_name_plural = "Advertisements"
+        ordering = ['-created_at']

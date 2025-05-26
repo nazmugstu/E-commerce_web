@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.db.models import Avg
-from .models import Product, Cart, CartItem, Category, Order, OrderItem
+from .models import Product, Cart, CartItem, Category, Order, OrderItem, Advertisement  # Added Advertisement
 from .forms import CartItemUpdateForm
 
 def home(request):
@@ -33,11 +33,17 @@ def home(request):
     featured_products = Product.objects.filter(is_featured=True)[:6]
     categories = Category.objects.all()
 
+    # সক্রিয় বিজ্ঞাপন লোড
+    advertisements = Advertisement.objects.filter(is_active=True)[:3]  # সর্বোচ্চ ৩টি বিজ্ঞাপন
+    print("Advertisements:", advertisements)  # Debugging output
+
     return render(request, 'core/home.html', {
         'products': products_paginated,
         'featured_products': featured_products,
-        'categories': categories
+        'categories': categories,
+        'advertisements': advertisements
     })
+
 
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -84,7 +90,6 @@ def cart(request):
     cart_items = cart.cartitem_set.all() if cart else []
     cart_total = sum(item.product.price * item.quantity for item in cart_items)
     
-    # কার্ট আইটেম আপডেট ফর্ম
     if request.method == 'POST' and 'update_quantity' in request.POST:
         form = CartItemUpdateForm(request.POST)
         if form.is_valid():
@@ -122,10 +127,8 @@ def checkout(request):
             messages.error(request, "No items selected for checkout.")
             return redirect('core:cart')
         
-        # Calculate total amount for selected items
         total_amount = sum(item.product.price * int(request.POST.get(f'quantity_{item.id}', item.quantity)) for item in selected_items)
         
-        # Create an order
         order = Order.objects.create(
             user=request.user,
             total_amount=total_amount,
@@ -133,7 +136,6 @@ def checkout(request):
             status='Pending'
         )
         
-        # Create order items for selected items
         for item in selected_items:
             quantity = int(request.POST.get(f'quantity_{item.id}', item.quantity))
             OrderItem.objects.create(

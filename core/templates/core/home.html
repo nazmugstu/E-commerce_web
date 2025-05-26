@@ -5,31 +5,30 @@
 
 {% block content %}
 <style>
-    /* Custom CSS for Swiper Carousel */
+    /* Existing styles (unchanged) */
     .swiper-container {
-        max-width: 1200px; /* Limit carousel width for better control */
-        margin: 0 auto; /* Center the carousel */
-        overflow: visible; /* Allow pagination dots to appear outside */
-        padding: 0 20px 50px 20px; /* Increased bottom padding for pagination space */
+        max-width: 1200px;
+        margin: 0 auto;
+        overflow: visible;
+        padding: 0 20px 50px 20px;
     }
     .swiper-slide {
         display: flex;
-        justify-content: center; /* Center each slide */
-        opacity: 0.7; /* Slightly fade non-active slides */
+        justify-content: center;
+        opacity: 0.7;
         transition: opacity 0.3s ease;
     }
     .swiper-slide-active,
     .swiper-slide-prev,
     .swiper-slide-next {
-        opacity: 1; /* Fully visible for the three centered slides */
+        opacity: 1;
     }
-    /* Hide slides beyond the three centered ones */
     .swiper-slide:not(.swiper-slide-active):not(.swiper-slide-prev):not(.swiper-slide-next) {
-        visibility: hidden; /* Hide non-centered slides */
+        visibility: hidden;
     }
     .swiper-button-next,
     .swiper-button-prev {
-        color: #4f46e5; /* Indigo color for arrows */
+        color: #4f46e5;
         background: rgba(255, 255, 255, 0.9);
         border-radius: 50%;
         width: 40px;
@@ -46,8 +45,8 @@
     }
     .swiper-pagination {
         position: relative;
-        margin-top: 50px; /* Increased to place dots further below the carousel */
-        padding-bottom: 20px; /* Increased padding to separate from content below */
+        margin-top: 50px;
+        padding-bottom: 20px;
     }
     .swiper-pagination-bullet {
         background: #4f46e5;
@@ -59,7 +58,6 @@
         opacity: 1;
         background: #4f46e5;
     }
-    /* Product card hover effect */
     .product-card {
         transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
@@ -67,123 +65,216 @@
         transform: translateY(-5px);
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
     }
-    /* Form input focus styles */
     input:focus, select:focus {
         outline: none;
         box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
     }
+    /* Advertisement Card Styles */
+    .ad-card {
+        position: relative;
+        background: linear-gradient(135deg, #ffffff, #f3f4f6);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid #e5e7eb;
+    }
+    .ad-card:hover {
+        transform: scale(1.03);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+    .ad-card img {
+        width: 100%;
+        height: 160px;
+        object-fit: cover;
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
+    }
+    .ad-card-content {
+        padding: 16px;
+    }
+    .ad-card h3 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 8px;
+    }
+    .ad-card p {
+        font-size: 0.875rem;
+        color: #4b5563;
+        line-height: 1.5;
+        margin-bottom: 12px;
+    }
+    .ad-card a {
+        display: inline-flex;
+        align-items: center;
+        background: #4f46e5;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: background 0.3s ease;
+    }
+    .ad-card a:hover {
+        background: #4338ca;
+    }
+    .ad-card .badge {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        background: #ef4444;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
 </style>
 
 <div class="container mx-auto px-6 py-12 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen">
-    <!-- Search and Filter Form -->
-    <div class="mb-10 bg-white shadow-2xl rounded-2xl p-8 transform transition-all duration-300">
-        <form method="GET" action="{% url 'core:home' %}" class="flex flex-col md:flex-row gap-4">
-            <input type="text" name="q" placeholder="Search products..." value="{{ request.GET.q }}" class="border border-gray-200 p-4 rounded-xl w-full md:w-1/3 focus:ring-0 focus:border-indigo-600 bg-gray-50 text-gray-800 placeholder-gray-400 transition duration-300">
-            <select name="category" class="border border-gray-200 p-4 rounded-xl w-full md:w-1/4 focus:ring-0 focus:border-indigo-600 bg-gray-50 text-gray-800 transition duration-300">
-                <option value="">All Categories</option>
-                {% for category in categories %}
-                <option value="{{ category.id }}" {% if request.GET.category == category.id|stringformat:"s" %}selected{% endif %}>{{ category.name }}</option>
-                {% endfor %}
-            </select>
-            <input type="number" name="min_price" placeholder="Min Price" value="{{ request.GET.min_price }}" class="border border-gray-200 p-4 rounded-xl w-full md:w-1/5 focus:ring-0 focus:border-indigo-600 bg-gray-50 text-gray-800 placeholder-gray-400 transition duration-300">
-            <input type="number" name="max_price" placeholder="Max Price" value="{{ request.GET.max_price }}" class="border border-gray-200 p-4 rounded-xl w-full md:w-1/5 focus:ring-0 focus:border-indigo-600 bg-gray-50 text-gray-800 placeholder-gray-400 transition duration-300">
-            <button type="submit" class="bg-indigo-600 text-white p-4 rounded-xl hover:bg-indigo-700 transition duration-300 shadow-md hover:shadow-lg font-semibold">Filter</button>
-        </form>
-    </div>
+    <div class="flex flex-col lg:flex-row gap-6">
+        <!-- Main Content -->
+        <div class="flex-1">
+            <!-- Search and Filter Form -->
+            <div class="mb-10 bg-white shadow-2xl rounded-2xl p-8 transform transition-all duration-300">
+                <form method="GET" action="{% url 'core:home' %}" class="flex flex-col md:flex-row gap-4">
+                    <input type="text" name="q" placeholder="Search products..." value="{{ request.GET.q }}" class="border border-gray-200 p-4 rounded-xl w-full md:w-1/3 focus:ring-0 focus:border-indigo-600 bg-gray-50 text-gray-800 placeholder-gray-400 transition duration-300">
+                    <select name="category" class="border border-gray-200 p-4 rounded-xl w-full md:w-1/4 focus:ring-0 focus:border-indigo-600 bg-gray-50 text-gray-800 transition duration-300">
+                        <option value="">All Categories</option>
+                        {% for category in categories %}
+                        <option value="{{ category.id }}" {% if request.GET.category == category.id|stringformat:"s" %}selected{% endif %}>{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="number" name="min_price" placeholder="Min Price" value="{{ request.GET.min_price }}" class="border border-gray-200 p-4 rounded-xl w-full md:w-1/5 focus:ring-0 focus:border-indigo-600 bg-gray-50 text-gray-800 placeholder-gray-400 transition duration-300">
+                    <input type="number" name="max_price" placeholder="Max Price" value="{{ request.GET.max_price }}" class="border border-gray-200 p-4 rounded-xl w-full md:w-1/5 focus:ring-0 focus:border-indigo-600 bg-gray-50 text-gray-800 placeholder-gray-400 transition duration-300">
+                    <button type="submit" class="bg-indigo-600 text-white p-4 rounded-xl hover:bg-indigo-700 transition duration-300 shadow-md hover:shadow-lg font-semibold">Filter</button>
+                </form>
+            </div>
 
-    <!-- Carousel Section -->
-    <div class="carousel mb-12">
-        <h2 class="text-4xl font-extrabold text-gray-900 mb-8 text-center">Featured Products</h2>
-        <div class="swiper-container relative">
-            <div class="swiper-wrapper">
-                {% for product in featured_products %}
-                <div class="swiper-slide">
-                    <div class="product-card bg-white shadow-lg rounded-xl p-6 border border-gray-100">
-                        <img src="{{ product.get_image }}" alt="{{ product.name }}" class="w-full h-56 object-cover rounded-lg">
-                        <h3 class="text-xl font-semibold text-gray-800 mt-4">{{ product.name }}</h3>
-                        <div class="flex items-center justify-between mt-3">
-                            <p class="text-gray-700 text-lg">
-                                {% if product.discount_price %}
-                                <span class="line-through text-gray-400">{{ product.price }} BDT</span>
-                                <span class="text-red-600 font-semibold ml-2">{{ product.discount_price }} BDT</span>
-                                {% else %}
-                                {{ product.price }} BDT
-                                {% endif %}
-                            </p>
-                            {% if product.average_rating %}
-                            <p class="text-yellow-500 font-semibold">★ {{ product.average_rating|floatformat:1 }}</p>
+            <!-- Carousel Section -->
+            <div class="carousel mb-12">
+                <h2 class="text-4xl font-extrabold text-gray-900 mb-8 text-center">Featured Products</h2>
+                <div class="swiper-container relative">
+                    <div class="swiper-wrapper">
+                        {% for product in featured_products %}
+                        <div class="swiper-slide">
+                            <div class="product-card bg-white shadow-lg rounded-xl p-6 border border-gray-100">
+                                <img src="{{ product.get_image }}" alt="{{ product.name }}" class="w-full h-56 object-cover rounded-lg">
+                                <h3 class="text-xl font-semibold text-gray-800 mt-4">{{ product.name }}</h3>
+                                <div class="flex items-center justify-between mt-3">
+                                    <p class="text-gray-700 text-lg">
+                                        {% if product.discount_price %}
+                                        <span class="line-through text-gray-400">{{ product.price }} BDT</span>
+                                        <span class="text-red-600 font-semibold ml-2">{{ product.discount_price }} BDT</span>
+                                        {% else %}
+                                        {{ product.price }} BDT
+                                        {% endif %}
+                                    </p>
+                                    {% if product.average_rating %}
+                                    <p class="text-yellow-500 font-semibold">★ {{ product.average_rating|floatformat:1 }}</p>
+                                    {% endif %}
+                                </div>
+                                <div class="mt-5 flex gap-4">
+                                    <a href="{% url 'core:product_detail' product.id %}" class="bg-gray-200 text-gray-700 px-5 py-2 rounded-lg hover:bg-gray-300 transition duration-300 font-medium">Details</a>
+                                    <form action="{% url 'core:add_to_cart' product.id %}" method="POST" class="inline">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit" class="bg-indigo-600 text-white px-5 py-2 rounded-lg hover:bg-indigo-700 transition duration-300 font-medium">Add to Cart</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-center text-gray-600 text-lg">No featured products available.</p>
+                        {% endfor %}
+                    </div>
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-button-prev"></div>
+                    <div class="swiper-pagination"></div>
+                </div>
+            </div>
+
+            <!-- Product Grid Section -->
+            <h2 class="text-4xl font-extrabold text-gray-900 mb-8 text-center">All Products</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {% for product in products %}
+                <div class="product-card bg-white shadow-lg rounded-xl p-6 border border-gray-100">
+                    <img src="{{ product.get_image }}" alt="{{ product.name }}" class="w-full h-56 object-cover rounded-lg">
+                    <h3 class="text-xl font-semibold text-gray-800 mt-4">{{ product.name }}</h3>
+                    <div class="flex items-center justify-between mt-3">
+                        <p class="text-gray-700 text-lg">
+                            {% if product.discount_price %}
+                            <span class="line-through text-gray-400">{{ product.price }} BDT</span>
+                            <span class="text-red-600 font-semibold ml-2">{{ product.discount_price }} BDT</span>
+                            {% else %}
+                            {{ product.price }} BDT
                             {% endif %}
-                        </div>
-                        <div class="mt-5 flex gap-4">
-                            <a href="{% url 'core:product_detail' product.id %}" class="bg-gray-200 text-gray-700 px-5 py-2 rounded-lg hover:bg-gray-300 transition duration-300 font-medium">Details</a>
-                            <form action="{% url 'core:add_to_cart' product.id %}" method="POST" class="inline">
-                                {% csrf_token %}
-                                <input type="hidden" name="quantity" value="1">
-                                <button type="submit" class="bg-indigo-600 text-white px-5 py-2 rounded-lg hover:bg-indigo-700 transition duration-300 font-medium">Add to Cart</button>
-                            </form>
-                        </div>
+                        </p>
+                        {% if product.average_rating %}
+                        <p class="text-yellow-500 font-semibold">★ {{ product.average_rating|floatformat:1 }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="mt-5 flex gap-4">
+                        <a href="{% url 'core:product_detail' product.id %}" class="bg-gray-200 text-gray-700 px-5 py-2 rounded-lg hover:bg-gray-300 transition duration-300 font-medium">Details</a>
+                        <form action="{% url 'core:add_to_cart' product.id %}" method="POST" class="inline">
+                            {% csrf_token %}
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="bg-indigo-600 text-white px-5 py-2 rounded-lg hover:bg-indigo-700 transition duration-300 font-medium">Add to Cart</button>
+                        </form>
                     </div>
                 </div>
                 {% empty %}
-                <p class="text-center text-gray-600 text-lg">No featured products available.</p>
+                <p class="text-center col-span-full text-gray-600 text-lg">No products found.</p>
                 {% endfor %}
             </div>
-            <div class="swiper-button-next"></div>
-            <div class="swiper-button-prev"></div>
-            <div class="swiper-pagination"></div>
-        </div>
-    </div>
 
-    <!-- Product Grid Section -->
-    <h2 class="text-4xl font-extrabold text-gray-900 mb-8 text-center">All Products</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {% for product in products %}
-        <div class="product-card bg-white shadow-lg rounded-xl p-6 border border-gray-100">
-            <img src="{{ product.get_image }}" alt="{{ product.name }}" class="w-full h-56 object-cover rounded-lg">
-            <h3 class="text-xl font-semibold text-gray-800 mt-4">{{ product.name }}</h3>
-            <div class="flex items-center justify-between mt-3">
-                <p class="text-gray-700 text-lg">
-                    {% if product.discount_price %}
-                    <span class="line-through text-gray-400">{{ product.price }} BDT</span>
-                    <span class="text-red-600 font-semibold ml-2">{{ product.discount_price }} BDT</span>
-                    {% else %}
-                    {{ product.price }} BDT
+            <!-- Pagination -->
+            {% if products.has_other_pages %}
+            <div class="mt-12 flex justify-center">
+                <nav class="inline-flex rounded-lg shadow-md bg-white">
+                    {% if products.has_previous %}
+                    <a href="?page={{ products.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}" class="px-5 py-3 bg-gray-100 rounded-l-lg hover:bg-gray-200 transition duration-200 font-medium">Previous</a>
                     {% endif %}
-                </p>
-                {% if product.average_rating %}
-                <p class="text-yellow-500 font-semibold">★ {{ product.average_rating|floatformat:1 }}</p>
+                    {% for num in products.paginator.page_range %}
+                    <a href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}" class="px-5 py-3 {% if products.number == num %}bg-indigo-600 text-white{% else %}bg-gray-100 hover:bg-gray-200{% endif %} transition duration-200 font-medium">{{ num }}</a>
+                    {% endfor %}
+                    {% if products.has_next %}
+                    <a href="?page={{ products.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}" class="px-5 py-3 bg-gray-100 rounded-r-lg hover:bg-gray-200 transition duration-200 font-medium">Next</a>
+                    {% endif %}
+                </nav>
+            </div>
+            {% endif %}
+        </div>
+    <!-- Sidebar for Advertisements -->
+    <div class="w-full lg:w-80 lg:ml-auto">
+        <div class="bg-white shadow-2xl rounded-2xl p-6 sticky top-6 border border-gray-200">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 text-right border-b pb-2">Promotions</h2>
+            <div class="flex flex-col gap-6">
+                {% if advertisements %}
+                    {% for ad in advertisements %}
+                        <div class="ad-card w-full bg-gray-50 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border">
+                            <div class="relative">
+                                <img src="{{ ad.get_image }}" alt="{{ ad.title }}" class="w-full h-40 object-cover">
+                                <span class="absolute top-2 right-2 bg-green-500 text-white text-xs font-semibold px-2 py-1 rounded-full">New</span>
+                            </div>
+                            <div class="p-4">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-1">{{ ad.title }}</h3>
+                                <p class="text-sm text-gray-600 mb-2">{{ ad.description|truncatechars:80 }}</p>
+                                {% if ad.link %}
+                                    <a href="{{ ad.link }}" class="text-sm text-blue-600 hover:underline">Learn More →</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-gray-600 text-sm text-right">No promotions available.</p>
                 {% endif %}
             </div>
-            <div class="mt-5 flex gap-4">
-                <a href="{% url 'core:product_detail' product.id %}" class="bg-gray-200 text-gray-700 px-5 py-2 rounded-lg hover:bg-gray-300 transition duration-300 font-medium">Details</a>
-                <form action="{% url 'core:add_to_cart' product.id %}" method="POST" class="inline">
-                    {% csrf_token %}
-                    <input type="hidden" name="quantity" value="1">
-                    <button type="submit" class="bg-indigo-600 text-white px-5 py-2 rounded-lg hover:bg-indigo-700 transition duration-300 font-medium">Add to Cart</button>
-                </form>
-            </div>
         </div>
-        {% empty %}
-        <p class="text-center col-span-full text-gray-600 text-lg">No products found.</p>
-        {% endfor %}
     </div>
 
-    <!-- Pagination -->
-    {% if products.has_other_pages %}
-    <div class="mt-12 flex justify-center">
-        <nav class="inline-flex rounded-lg shadow-md bg-white">
-            {% if products.has_previous %}
-            <a href="?page={{ products.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}" class="px-5 py-3 bg-gray-100 rounded-l-lg hover:bg-gray-200 transition duration-200 font-medium">Previous</a>
-            {% endif %}
-            {% for num in products.paginator.page_range %}
-            <a href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}" class="px-5 py-3 {% if products.number == num %}bg-indigo-600 text-white{% else %}bg-gray-100 hover:bg-gray-200{% endif %} transition duration-200 font-medium">{{ num }}</a>
-            {% endfor %}
-            {% if products.has_next %}
-            <a href="?page={{ products.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}" class="px-5 py-3 bg-gray-100 rounded-r-lg hover:bg-gray-200 transition duration-200 font-medium">Next</a>
-            {% endif %}
-        </nav>
     </div>
-    {% endif %}
 </div>
 
 <!-- Swiper JS -->
@@ -191,12 +282,12 @@
 <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
 <script>
     const swiper = new Swiper('.swiper-container', {
-        slidesPerView: 3, // Show exactly 3 slides
-        centeredSlides: true, // Center the active slide
-        spaceBetween: 20, // Space between slides
-        loop: true, // Enable looping
+        slidesPerView: 3,
+        centeredSlides: true,
+        spaceBetween: 20,
+        loop: true,
         autoplay: {
-            delay: 3000, // Auto-slide every 3 seconds
+            delay: 3000,
             disableOnInteraction: false,
         },
         navigation: {
@@ -208,9 +299,9 @@
             clickable: true,
         },
         breakpoints: {
-            0: { slidesPerView: 1, spaceBetween: 10 }, // Mobile
-            640: { slidesPerView: 2, spaceBetween: 15 }, // Tablet
-            1024: { slidesPerView: 3, spaceBetween: 20 }, // Desktop
+            0: { slidesPerView: 1, spaceBetween: 10 },
+            640: { slidesPerView: 2, spaceBetween: 15 },
+            1024: { slidesPerView: 3, spaceBetween: 20 },
         }
     });
 </script>

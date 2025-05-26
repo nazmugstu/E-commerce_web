@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Product, Cart, CartItem, Order, OrderItem, Review
+from .models import Category, Cart, CartItem, Order, OrderItem, Product, Review, Advertisement
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -46,6 +46,19 @@ class OrderItemAdmin(admin.ModelAdmin):
 
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
-    list_display = ['product', 'user', 'rating', 'created_at']  # Fixed: Removed space in 'list display'
+    list_display = ['product', 'user', 'rating', 'created_at']
     list_filter = ['rating']
     search_fields = ['product__name', 'user__username']
+
+@admin.register(Advertisement)
+class AdvertisementAdmin(admin.ModelAdmin):
+    list_display = ['title', 'is_active', 'created_at', 'get_image']
+    list_filter = ['is_active']
+    search_fields = ['title', 'description']
+    list_editable = ['is_active']
+    fields = ['title', 'description', 'image', 'image_url', 'link', 'is_active', 'get_image_display']
+    readonly_fields = ['get_image_display']
+
+    def get_image_display(self, obj):
+        return obj.get_image
+    get_image_display.short_description = "Image URL"
