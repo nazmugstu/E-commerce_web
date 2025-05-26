@@ -1,11 +1,10 @@
-# core/views.py
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.db.models import Avg
-from .models import Product, Cart, CartItem, Category
+from .models import Product, Cart, CartItem, Category, Order, OrderItem
 from .forms import CartItemUpdateForm
 
 def home(request):
@@ -114,6 +113,41 @@ def checkout(request):
     if not cart or not cart.cartitem_set.exists():
         messages.error(request, "Your cart is empty.")
         return redirect('core:cart')
+    
+    if request.method == 'POST':
+        selected_item_ids = request.POST.getlist('selected_items')
+        selected_items = CartItem.objects.filter(id__in=selected_item_ids, cart=cart)
+        
+        if not selected_items:
+            messages.error(request, "No items selected for checkout.")
+            return redirect('core:cart')
+        
+        # Calculate total amount for selected items
+        total_amount = sum(item.product.price * int(request.POST.get(f'quantity_{item.id}', item.quantity)) for item in selected_items)
+        
+        # Create an order
+        order = Order.objects.create(
+            user=request.user,
+            total_amount=total_amount,
+            payment_status='Pending',
+            status='Pending'
+        )
+        
+        # Create order items for selected items
+        for item in selected_items:
+            quantity = int(request.POST.get(f'quantity_{item.id}', item.quantity))
+            OrderItem.objects.create(
+                order=order,
+                product=item.product,
+                quantity=quantity,
+                price=item.product.price
+            )
+        
+        return render(request, 'core/checkout.html', {
+            'order': order,
+            'selected_items': selected_items,
+            'total_amount': total_amount
+        })
     
     cart_items = cart.cartitem_set.all()
     cart_total = sum(item.product.price * item.quantity for item in cart_items)

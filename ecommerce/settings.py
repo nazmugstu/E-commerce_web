@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 from decouple import config
-import dj_database_url  # Add this for database from env
+import dj_database_url  # ডাটাবেজ ইউআরএল এর জন্য
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -10,7 +10,6 @@ SECRET_KEY = config('SECRET_KEY', default='your-secret-key')
 DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = ['e-commerce-web-in5m.onrender.com', 'localhost', '127.0.0.1']
-
 
 # Application definition
 INSTALLED_APPS = [
@@ -24,12 +23,12 @@ INSTALLED_APPS = [
     # Local apps
     'core.apps.CoreConfig',
     'payments.apps.PaymentsConfig',
-    'accounts.apps.AccountsConfig',  # Use AccountsConfig instead of 'accounts'
+    'accounts.apps.AccountsConfig',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # ✅ For serving static files in production
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Static files প্রোডাকশনে সার্ভ করার জন্য
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -58,7 +57,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ecommerce.wsgi.application'
 
-# ✅ Database config for both local and production
+# Database config for both local and production
 DATABASES = {
     'default': dj_database_url.config(
         default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
@@ -80,22 +79,50 @@ TIME_ZONE = 'Asia/Dhaka'
 USE_I18N = True
 USE_TZ = True
 
-# ✅ Static files
+# Static files
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'  # ✅
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# ✅ Media files
+# Media files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Login/logout
+# Login/logout urls
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/accounts/dashboard/'
 LOGOUT_REDIRECT_URL = '/'
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
+# ========================
+# SSLCOMMERZ SANDBOX SETTINGS
+# ========================
+
+SSL_COMMERZ = {
+    'store_id': config('STORE_ID', default=''),
+    'store_pass': config('STORE_PASSWORD', default=''),
+    'init_url': config('SSL_COMMERZ_URL', default='https://sandbox.sslcommerz.com/gwprocess/v4/api.php'),
+    'validate_url': config('SSL_VALIDATION_URL', default='https://sandbox.sslcommerz.com/validator/api/validationserverAPI.php'),
+    'timeout': config('SSL_API_TIMEOUT', default=30, cast=int)
+}
+
+# ========================
+# Logging (for debugging)
+# ========================
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {'class': 'logging.StreamHandler'},
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}

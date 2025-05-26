@@ -1,7 +1,18 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment Failed{% endblock %}
+
 {% block content %}
-<div class="container">
-    <h1>Payment Failed</h1>
-    <p>Please try again.</p>
+<div class="container mx-auto px-6 py-12 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen">
+    <div class="max-w-lg mx-auto bg-white shadow-2xl rounded-2xl p-8 text-center transform transition-all duration-300">
+        <h1 class="text-3xl font-extrabold text-red-600 mb-4">পেমেন্ট ব্যর্থ!</h1>
+        <p class="text-gray-700 text-lg mb-4">আপনার পেমেন্ট প্রক্রিয়া সম্পন্ন হয়নি। {{ error }}</p>
+        <p class="text-gray-600 mb-6">আমরা <span class="font-semibold">বিকাশ, নগদ, Visa, Mastercard</span> গ্রহণ করি। সঠিক তথ্য দিয়ে আবার চেষ্টা করুন।</p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="{% url 'core:checkout' %}" class="bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 transition duration-300 shadow-md hover:shadow-lg font-semibold">আবার চেষ্টা করুন</a>
+            <a href="{% url 'core:home' %}" class="bg-gray-200 text-gray-700 px-6 py-3 rounded-xl hover:bg-gray-300 transition duration-300 font-semibold">হোমে ফিরুন</a>
+        </div>
+    </div>
 </div>
 {% endblock %}

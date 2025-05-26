@@ -1,45 +1,76 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}কার্ট{% endblock %}
+{% block title %}Cart{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <h1 class="text-2xl font-bold mb-4">আপনার কার্ট</h1>
+<div class="container mx-auto px-4 py-8 max-w-5xl">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Your Cart</h1>
+    
     {% if cart_items %}
-    <div class="bg-white shadow-lg rounded-lg p-4">
-        {% for item in cart_items %}
-        <div class="flex items-center border-b py-4">
-            <div class="w-1/4">
-                {% if item.product.image %}
-                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="w-full h-24 object-cover rounded">
-                {% else %}
-                <img src="{% static 'images/placeholder.jpg' %}" alt="Placeholder" class="w-full h-24 object-cover rounded">
-                {% endif %}
+    <form action="{% url 'core:checkout' %}" method="POST" id="cart-form">
+        {% csrf_token %}
+        <div class="bg-white shadow-lg rounded-lg p-6">
+            {% for item in cart_items %}
+            <div class="flex items-center border-b py-4 gap-4">
+                <!-- Checkbox for selecting item -->
+                <div class="flex items-center">
+                    <input type="checkbox" name="selected_items" value="{{ item.id }}" class="h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500" checked>
+                </div>
+                <!-- Image -->
+                <div>
+                    <img src="{{ item.product.get_image }}" alt="{{ item.product.name }}" class="w-24 h-24 object-cover rounded-lg border border-gray-200 shadow-sm">
+                </div>
+                <!-- Product details -->
+                <div class="flex-1">
+                    <h3 class="text-lg font-semibold text-gray-800">{{ item.product.name }}</h3>
+                    <p class="text-gray-600 text-base" data-price="{{ item.product.price }}">{{ item.product.price }} BDT</p>
+                </div>
+                <!-- Quantity and actions -->
+                <div class="flex items-center gap-4">
+                    <input type="number" name="quantity_{{ item.id }}" value="{{ item.quantity }}" min="0" max="{{ item.product.stock }}" class="w-16 p-2 border rounded-lg text-center focus:ring-indigo-500 focus:border-indigo-500">
+                    <button type="submit" formaction="{% url 'core:update_cart_item' item.id %}" name="update_quantity" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">Update</button>
+                    <a href="{% url 'core:remove_from_cart' item.id %}" class="text-red-500 hover:text-red-700 text-sm">Remove</a>
+                </div>
             </div>
-            <div class="w-2/4 pl-4">
-                <h3 class="text-lg font-semibold">{{ item.product.name }}</h3>
-                <p class="text-gray-700">{{ item.product.price }} BDT</p>
-            </div>
-            <div class="w-1/4 flex items-center">
-                <form action="{% url 'core:update_cart_item' item.id %}" method="POST" class="flex items-center">
-                    {% csrf_token %}
-                    <input type="hidden" name="item_id" value="{{ item.id }}">
-                    <input type="number" name="quantity" value="{{ item.quantity }}" min="0" max="{{ item.product.stock }}" class="border p-1 w-16">
-                    <button type="submit" name="update_quantity" class="bg-blue-500 text-white px-2 py-1 ml-2 rounded hover:bg-blue-600">Update</button>
-                </form>
-                <a href="{% url 'core:remove_from_cart' item.id %}" class="ml-4 text-red-500 hover:text-red-700">Remove</a>
+            {% endfor %}
+            <!-- Total and checkout -->
+            <div class="text-right mt-4">
+                <p class="text-xl font-semibold text-gray-800">Total: <span id="cart-total">{{ cart_total }}</span> BDT</p>
+                <button type="submit" class="bg-indigo-600 text-white px-6 py-3 rounded-lg mt-2 hover:bg-indigo-700 transition">Checkout</button>
             </div>
         </div>
-        {% endfor %}
-        <div class="mt-4 text-right">
-            <p class="text-xl font-semibold">মোট: {{ cart_total }} BDT</p>
-            <a href="{% url 'core:checkout' %}" class="bg-blue-500 text-white px-4 py-2 mt-2 inline-block rounded hover:bg-blue-600">চেকআউট</a>
-        </div>
-    </div>
+    </form>
+    
+    <!-- JavaScript to update total dynamically -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const checkboxes = document.querySelectorAll('input[name="selected_items"]');
+            const quantities = document.querySelectorAll('input[name^="quantity_"]');
+            const totalElement = document.getElementById('cart-total');
+
+            function updateTotal() {
+                let total = 0;
+                checkboxes.forEach((checkbox, index) => {
+                    if (checkbox.checked) {
+                        const quantityInput = quantities[index];
+                        const quantity = parseInt(quantityInput.value) || 0;
+                        const price = parseFloat(checkbox.closest('.flex').querySelector('[data-price]').dataset.price) || 0;
+                        total += quantity * price;
+                    }
+                });
+                totalElement.textContent = total.toFixed(2);
+            }
+
+            checkboxes.forEach(checkbox => checkbox.addEventListener('change', updateTotal));
+            quantities.forEach(quantity => quantity.addEventListener('input', updateTotal));
+            updateTotal(); // Initial calculation
+        });
+    </script>
+    
     {% else %}
-    <p class="text-center">আপনার কার্ট খালি।</p>
+    <p class="text-center text-gray-600 text-lg py-8">Your cart is empty.</p>
     {% endif %}
-    <a href="{% url 'core:home' %}" class="mt-4 inline-block text-blue-500 hover:text-blue-700">শপিং চালিয়ে যান</a>
+    <a href="{% url 'core:home' %}" class="mt-4 inline-block text-indigo-600 hover:text-indigo-800 transition">Continue Shopping</a>
 </div>
 {% endblock %}

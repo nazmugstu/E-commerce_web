@@ -1,7 +1,65 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment Successful{% endblock %}
+
 {% block content %}
-<div class="container">
-    <h1>Payment Successful!</h1>
-    <p>Transaction ID: {{ transaction_id }}</p>
+<div class="container mx-auto px-6 py-12 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen">
+    <div class="max-w-lg mx-auto bg-white shadow-2xl rounded-2xl p-8 text-center transform transition-all duration-300">
+        <h1 class="text-3xl font-extrabold text-green-600 mb-4">পেমেন্ট সফল!</h1>
+        <p class="text-gray-700 text-lg mb-4">আপনার পেমেন্ট সফলভাবে সম্পন্ন হয়েছে। ধন্যবাদ!</p>
+        
+        <!-- Payment Method Logo -->
+        <div class="flex justify-center mb-6">
+            {% if payment_method == 'Bkash' %}
+            <img src="{% static 'images/bkash_logo.png' %}" alt="Bkash Logo" class="h-12 w-12 object-contain">
+            {% elif payment_method == 'Nagad' %}
+            <img src="{% static 'images/nagad_logo.png' %}" alt="Nagad Logo" class="h-12 w-12 object-contain">
+            {% elif payment_method|lower|slice:":4" == 'visa' %}
+            <img src="{% static 'images/visa_logo.png' %}" alt="Visa Logo" class="h-12 w-12 object-contain">
+            {% elif payment_method|lower|slice:":9" == 'mastercard' %}
+            <img src="{% static 'images/mastercard_logo.png' %}" alt="Mastercard Logo" class="h-12 w-12 object-contain">
+            {% else %}
+            <div class="flex gap-4">
+                <img src="{% static 'images/bkash_logo.png' %}" alt="Bkash Logo" class="h-12 w-12 object-contain opacity-50">
+                <img src="{% static 'images/nagad_logo.png' %}" alt="Nagad Logo" class="h-12 w-12 object-contain opacity-50">
+                <img src="{% static 'images/visa_logo.png' %}" alt="Visa Logo" class="h-12 w-12 object-contain opacity-50">
+                <img src="{% static 'images/mastercard_logo.png' %}" alt="Mastercard Logo" class="h-12 w-12 object-contain opacity-50">
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Transaction and Order Details -->
+        <div class="text-left mb-6">
+            <table class="w-full text-gray-600">
+                <tr>
+                    <td class="font-semibold py-1">ট্রানজাকশন আইডি:</td>
+                    <td class="py-1">{{ transaction_id }}</td>
+                </tr>
+                {% if payment_method %}
+                <tr>
+                    <td class="font-semibold py-1">পেমেন্ট মেথড:</td>
+                    <td class="py-1">{{ payment_method }}</td>
+                </tr>
+                {% endif %}
+                {% if order_summary %}
+                <tr>
+                    <td class="font-semibold py-1">অর্ডার সারাংশ:</td>
+                    <td class="py-1">{{ order_summary }}</td>
+                </tr>
+                {% endif %}
+            </table>
+        </div>
+        
+        <!-- Cashback Offer Message -->
+        {% if cashback_amount %}
+        <p class="text-green-600 font-semibold mb-6">অভিনন্দন! আপনি {{ cashback_amount }} টাকা ক্যাশব্যাক পেয়েছেন!</p>
+        {% endif %}
+        
+        <p class="text-gray-600 mb-6">আপনার অর্ডার শীঘ্রই প্রক্রিয়া করা হবে। <span class="font-semibold">বিকাশ, নগদ, Visa, Mastercard</span> ব্যবহার করার জন্য ধন্যবাদ।</p>
+        
+        <!-- Return to Home Button -->
+        <a href="{% url 'core:home' %}" class="bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 transition duration-300 shadow-md hover:shadow-lg font-semibold">হোমে ফিরুন</a>
+    </div>
 </div>
 {% endblock %}
